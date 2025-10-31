@@ -212,6 +212,7 @@ int qmt_lvbo_init(struct lu_device *ld, struct ldlm_resource *res)
 
 		/* TODO: need something like qmt_extend_lqe_gd that has
 		 * to be calledeach time when qpi_slv_nr is incremented */
+		qmt_sarr_read_down(lqe2qpi(lqe));
 		lgd = qmt_alloc_lqe_gd(pool, qtype);
 		if (!lgd) {
 			lqe_putref(lqe);
@@ -219,7 +220,8 @@ int qmt_lvbo_init(struct lu_device *ld, struct ldlm_resource *res)
 			GOTO(out, rc = -ENOMEM);
 		}
 
-		qmt_setup_lqe_gd(env, qmt, lqe, lgd, pool_type);
+		qmt_setup_lqe_gd(env, qmt, lqe, lgd, pool_type, true);
+		qmt_sarr_read_up(lqe2qpi(lqe));
 
 		/* store reference to lqe in lr_lvb_data */
 		res->lr_lvb_data = lqe;

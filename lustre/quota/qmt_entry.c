@@ -1305,7 +1305,7 @@ qunit_lbl:
 
 void qmt_setup_lqe_gd(const struct lu_env *env, struct qmt_device *qmt,
 		      struct lquota_entry *lqe, struct lqe_glbl_data *lgd,
-		      int pool_type)
+		      int pool_type, bool pool_locked)
 {
 	__u64 qunit;
 	bool edquot;
@@ -1316,7 +1316,6 @@ void qmt_setup_lqe_gd(const struct lu_env *env, struct qmt_device *qmt,
 
 	/* Firstly set all elements in array with
 	 * qunit and edquot of global pool */
-	qmt_sarr_read_down(lqe2qpi(lqe));
 	for (i = 0; i < lgd->lqeg_num_used; i++) {
 		lgd->lqeg_arr[i].lge_qunit = qunit;
 		lgd->lqeg_arr[i].lge_edquot = edquot;
@@ -1326,11 +1325,10 @@ void qmt_setup_lqe_gd(const struct lu_env *env, struct qmt_device *qmt,
 		lgd->lqeg_arr[i].lge_edquot_nu = 0;
 		lgd->lqeg_arr[i].lge_idx = qmt_sarr_get_idx(lqe2qpi(lqe), i);
 	}
-	qmt_sarr_read_up(lqe2qpi(lqe));
 
 	qmt_pool_lqes_lookup_spec(env, qmt, pool_type,
 				  lqe_qtype(lqe), &lqe->lqe_id);
-	qmt_seed_glbe(env, lgd, false);
+	qmt_seed_glbe(env, lgd, pool_locked);
 
 	mutex_lock(&lqe->lqe_glbl_data_lock);
 	if (lqe->lqe_glbl_data == NULL) {

@@ -496,7 +496,7 @@ int qmt_map_lge_idx(struct lqe_glbl_data *lgd, int ostidx);
 struct lqe_glbl_data *qmt_alloc_lqe_gd(struct qmt_pool_info *, int);
 void qmt_free_lqe_gd(struct lqe_glbl_data *);
 void qmt_setup_lqe_gd(const struct lu_env *,  struct qmt_device *,
-		    struct lquota_entry *, struct lqe_glbl_data *, int);
+		      struct lquota_entry *, struct lqe_glbl_data *, int, bool);
 #define qmt_seed_glbe_edquot(env, lqeg) \
 		qmt_seed_glbe_all(env, lqeg, false, true, false)
 #define qmt_seed_glbe_qunit(env, lqeg) \
