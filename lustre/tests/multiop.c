@@ -118,14 +118,18 @@ static const char *
 pop_arg(int argc, char *argv[])
 {
 	static int cur_arg;
+	static bool init;
 
 	/* if we have an input file, that adds two args, but there's no
 	 * command sequence, so in total there's 1 more arg before the paths
 	 */
-	if (!command_buf)
-		cur_arg = 3;
-	else
-		cur_arg = 4;
+	if (!init) {
+		init = true;
+		if (!command_buf)
+			cur_arg = 3;
+		else
+			cur_arg = 4;
+	}
 
 	if (cur_arg >= argc)
 		return NULL;
@@ -353,6 +357,7 @@ int main(int argc, char **argv)
 			break;
 		default:
 			fprintf(stderr, usage, argv[0]);
+			exit(1);
 		}
 	}
 
