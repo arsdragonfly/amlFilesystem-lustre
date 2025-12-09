@@ -46,6 +46,8 @@ endif
 # This is the debhelper compatibility version to use.
 export DH_COMPAT=11
 
+export QUILT_PATCHES=debian/patches
+
 # Module-assistant stuff
 ifneq (,$(findstring server,$(DEB_BUILD_PROFILES)))
 	PACKAGE=lustre-server-modules
@@ -119,7 +121,7 @@ autogen-stamp: patch-stamp
 	#  needed autogen.sh scripts
 	#  see https://bugzilla.lustre.org/attachment.cgi?id=27156
 	#  for an example)
-	if grep -e "^--- .*\/autoconf\/" \
+	if [ -d debian/patches ] && grep -e "^--- .*\/autoconf\/" \
 		-e "^--- .*\/autoMakefile\.am" \
 		-e "^--- .*\/Makefile\.am" \
 		-e "^--- .*\/configure\.ac" \
@@ -217,8 +219,8 @@ configure-stamp: autogen-stamp debian/control.main debian/control.modules.in
 	echo "Final value of EXTRAFLAGS: $${EXTRAFLAGS}"; \
 	( cd $(BUILDDIR) && \
 		$(SRCDIR)/configure --disable-dependency-tracking \
-			--with-linux=$${KERNEL_SRC} \
-			--with-linux-obj=$${KERNEL_OBJ} \
+			--with-linux=$(KSRC_TREE) \
+			--with-linux-obj=$(KSRC) \
 			--disable-snmp \
 			--enable-quota \
 			$${EXTRAFLAGS} \
@@ -562,7 +564,7 @@ binary-modules: prep-deb-files
 clean:
 	dh_testdir
 	dh_testroot
-	dpatch deapply-all -v
+	quilt pop -a -v || test $$? = 2
 	-$(MAKE) distclean
 	rm -rf  debian/substvars debian/*.bak debian/*~ *~  *-stamp
 	ls -d debian/lustre-*-modules-* | grep -v _KVERS_ | grep -v dkms | xargs rm -f || true
@@ -577,11 +579,11 @@ clean:
 
 patch: patch-stamp
 patch-stamp:
-	dpatch apply-all -v
+	quilt push -a -v || test $$? = 2
 	touch $@
 
 unpatch:
-	dpatch deapply-all -v
+	quilt pop -a -v || test $$? = 2
 	rm -rf debian/patched patch-stamp
 
 .PHONY: binary-arch clean source diff  binary binary-indep binary-arch install configure

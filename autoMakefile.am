@@ -406,6 +406,8 @@ debs: undef.h debs_common
 	fi; \
 	export KERNEL_OBJ="$(LINUX_OBJ)"; \
 	export KERNEL_SRC="$(LINUX)"; \
+	export LINUX_OBJ="$(LINUX_OBJ)"; \
+	export LINUX="$(LINUX)"; \
 	export VER=$$(sed -ne '1s/^lustre (\(.*\)).*/\1/p' debian/changelog); \
 	echo "Enabled Build Profiles: $${DEB_BUILD_PROFILES}"; \
 	echo "Kernel Source: $${KERNEL_SRC}"; \
@@ -476,6 +478,8 @@ dkms-debs: undef.h debs_common
 	export DEB_BUILD_PROFILES="client"; \
 	export KERNEL_OBJ="$(LINUX_OBJ)"; \
 	export KERNEL_SRC="$(LINUX)"; \
+	export LINUX_OBJ="$(LINUX_OBJ)"; \
+	export LINUX="$(LINUX)"; \
 	export VER=$$(sed -ne '1s/^lustre (\(.*\)).*/\1/p' debian/changelog); \
 	echo "Enabled Build Profiles: $${DEB_BUILD_PROFILES}"; \
 	echo "Kernel Source: $${KERNEL_SRC}"; \
